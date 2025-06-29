@@ -60,7 +60,7 @@ def call_deepseek(prompt):
 
 
 ##############
-genai.configure(api_key= GEMINI_API_KEY)  # or use an env variable
+genai.configure(api_key= GEMINI_API_KEY) 
 
 def call_gemini(prompt):
     """Call Google Gemini API (gemini-2.5-flash model)"""
@@ -131,35 +131,35 @@ Use everyday analogies and keep your explanation beginner-friendly, suitable for
 
     elif scenario == "ofdm":
       total_bandwidth = float(inputs.get("total_bandwidth"))              # Total system bandwidth in Hz
-      subcarrier_spacing = float(inputs.get("subcarrier_spacing"))        # Spacing between subcarriers in Hz (e.g., 15 kHz in LTE)
-      num_resource_blocks = int(inputs.get("num_resource_blocks"))        # Number of resource blocks allocated
-      subcarriers_per_rb = int(inputs.get("subcarriers_per_rb"))          # Number of subcarriers in one resource block
-      modulation_order = int(inputs.get("modulation_order"))              # Modulation order (e.g., 2 for QPSK, 4 for 16-QAM, etc.)
-      coding_rate = float(inputs.get("coding_rate"))                      # Channel coding rate (e.g., 0.5 for 1/2 rate coding)
+      subcarrier_spacing = float(inputs.get("subcarrier_spacing"))        # Spacing between subcarriers in Hz (e.g., 15 kHz)
+      num_resource_blocks = int(inputs.get("num_resource_blocks"))        # Number of resource blocks 
+      subcarriers_per_rb = int(inputs.get("subcarriers_per_rb"))          # Number of subcarriers in one RB
+      modulation_order = int(inputs.get("modulation_order"))              # Modulation order (M is 2 for QPSK, 4 for 16-QAM, etc.)
+      coding_rate = float(inputs.get("coding_rate"))                      # Channel coding rate (0.5 for 1/2 rate coding)
 
         # Overhead caused by Cyclic Prefix (CP) — about 7% longer symbol duration in typical LTE systems
       cyclic_prefix_overhead = 0.07
         # Total number of subcarriers used in the transmission
       total_subcarriers = num_resource_blocks * subcarriers_per_rb
-        # Bits per modulation symbol = log2(M), where M is modulation order
+        # Bits per symbol = log2(M)
       m = math.log2(modulation_order)
-        # Bits per Resource Element (RE) after coding = bits per symbol × coding rate
+        # Bits per RE
       bits_per_re = m * coding_rate
 
-        # Useful symbol duration (Tu), without cyclic prefix
+        #  symbol duration (Tu), without CP
       t_u = 1.0 / subcarrier_spacing
-        # Total OFDM symbol duration including CP overhead
+        # Total OFDM symbol duration including CP
       t_sym = t_u * (1 + cyclic_prefix_overhead)
         # Number of OFDM symbols transmitted per second on a single subcarrier
       symbols_per_second = 1.0 / t_sym
 
-        # Data rate per subcarrier (RE) = bits per RE × number of symbols per second
+        # Data rate per subcarrier (RE)
       rate_per_re = bits_per_re * symbols_per_second
-        # Data rate per Resource Block (RB) = number of subcarriers per RB × rate per RE
+        # Data rate per Resource Block (RB) 
       rate_per_rb = subcarriers_per_rb * rate_per_re
-        # Maximum total capacity = rate per RB × number of RBs
+        # Maximum total capacity
       max_capacity = num_resource_blocks * rate_per_rb
-        # Spectral Efficiency = Total capacity / Bandwidth → in bits/sec/Hz
+        # Spectral Efficiency
       spectral_efficiency = max_capacity / total_bandwidth
 
       results = {
@@ -261,7 +261,7 @@ Keep your explanation simple, step-by-step, and educational for junior engineers
     elif scenario == "cellular_design":
         total_area = float(inputs.get("total_area"))                 # Total coverage area in km²
         cell_radius = float(inputs.get("cell_radius"))               # Radius of each hexagonal cell 
-        cluster_size = int(inputs.get("cluster_size"))               # Frequency reuse cluster size (e.g., 3, 7)
+        cluster_size = int(inputs.get("cluster_size"))               # cluster size (e.g., 3, 7)
         total_bandwidth = float(inputs.get("total_bandwidth"))       # Total system bandwidth kHz
         channel_bandwidth = float(inputs.get("channel_bandwidth"))   # Bandwidth per channel  kHz
         num_users = int(inputs.get("num_users"))                     # Total number of users in the system
