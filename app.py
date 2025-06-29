@@ -7,7 +7,6 @@ import json
 from flask_cors import CORS 
 import google.generativeai as genai
 from openai import OpenAI
-from erlang import erlangb
 
 
 app = Flask(__name__)
@@ -73,9 +72,20 @@ def call_gemini(prompt):
 
 
 ##############
+def erlang_b(traffic, channels):
+    if channels == 0:
+        return 1.0
+    inv_b = 1.0
+    for k in range(1, channels + 1):
+        inv_b = 1 + inv_b * k / traffic
+    return 1.0 / inv_b
+
 @app.route('/')
 def index():
     return render_template("index.html")
+
+
+
 
 @app.route('/calculate', methods=['POST'])
 def calculate():
@@ -301,7 +311,7 @@ def calculate():
 
             for _ in range(100):
                 mid = (low + high) / 2
-                b_mid = erlangb(traffic=mid, channels=channels_per_cell)
+                b_mid = erlang_b(traffic=mid, channels=channels_per_cell)
                 if b_mid < blocking_target:
                     low = mid
                 else:
@@ -317,7 +327,7 @@ def calculate():
             max_system_users = max_users_per_cell * num_cells
 
             # Compute current blocking probability
-            blocking_prob = erlangb(traffic=traffic_per_cell, channels=channels_per_cell) if channels_per_cell > 0 else 1.0
+            blocking_prob = erlang_b(traffic=traffic_per_cell, channels=channels_per_cell) if channels_per_cell > 0 else 1.0
 
             results = {
                 "Hexagonal cell area (km²)": f"{cell_area:.2f}",
