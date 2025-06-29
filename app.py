@@ -182,7 +182,7 @@ def calculate():
               }
     
     
-          prompt = f"""
+            prompt = f"""
     You are an AI assistant embedded in a web app for wireless and OFDM system design. 
     The backend has computed various performance metrics based on user input.
     
@@ -222,12 +222,12 @@ def calculate():
             tx_cable_loss_db = float(inputs.get("tx_cable_loss_db"))  # Loss in the Tx cable in dB
             rx_gain_dbi = float(inputs.get("rx_gain_dbi"))            # Receiver antenna gain in dBi
             rx_cable_loss_db = float(inputs.get("rx_cable_loss_db"))  # Loss in the Rx cable in dB
-    
-    
+
+
             # Calculate Free Space Path Loss (FSPL) in dB using the standard formula:
             # FSPL(dB) = 20*log10(distance_km) + 20*log10(freq_MHz) + 32.44
             fspl = 20 * math.log10(distance_km) + 20 * math.log10(freq_mhz) + 32.44
-    
+
             # Effective transmitted power after accounting for transmitter cable loss
             effective_tx_power = tx_power_dbm - tx_cable_loss_db
             
@@ -239,10 +239,10 @@ def calculate():
                 "Free Space Path Loss (dB)": f"{fspl:.2f}",
                 "Received Signal Strength (dBm)": f"{received_power_dbm:.2f}",
             }
-    
+
             prompt = f"""
     You are an AI agent supporting a wireless design tool. The backend has already performed a link budget analysis using these user inputs:
-    
+
     - Frequency: {freq_mhz} MHz
     - Distance: {distance_km} km
     - Transmitter Power: {tx_power_dbm} dBm
@@ -250,26 +250,26 @@ def calculate():
     - Transmitter Cable Loss: {tx_cable_loss_db} dB
     - Receiver Antenna Gain: {rx_gain_dbi} dBi
     - Receiver Cable Loss: {rx_cable_loss_db} dB
-    
+
     Calculated values:
     - Effective Transmitted Power: {effective_tx_power:.2f} dBm
     - Free Space Path Loss (FSPL): {fspl:.2f} dB
     - Received Signal Strength: {received_power_dbm:.2f} dBm
-    
+
     Provide a clear explanation for:
     - What each parameter and result means
     - How they affect signal strength and communication range
     - Why these results are critical for designing reliable wireless links
-    
+
     Keep your explanation simple, step-by-step, and educational for junior engineers or students.
     """
-    
-    
-    
+
+
+
     ##############################################################################
-    
-    
-    
+
+
+
         elif scenario == "cellular_design":
             total_area = validate_positive_number("total_area", inputs.get("total_area"))                 # Total coverage area in km²
             cell_radius = validate_positive_number("cell_radius", inputs.get("cell_radius"))               # Radius of each hexagonal cell in km
@@ -281,8 +281,8 @@ def calculate():
             blocking_target = float(inputs.get("blocking_target"))       # Target blocking probability (between 0 and 1)
             if not (0 < blocking_target < 1):
                 raise ValueError("Blocking target must be between 0 and 1")
-    
-    
+
+
             # Calculate cell area 
             cell_area = (3 * math.sqrt(3) / 2) * (cell_radius ** 2)
             # Calculate the number of cells 
@@ -295,10 +295,10 @@ def calculate():
             total_traffic = num_users * traffic_per_user
             # Average traffic per cell
             traffic_per_cell = total_traffic / num_cells if num_cells > 0 else 0
-    
+
             low, high = 0.0, 1000.0 * channels_per_cell
             max_traffic_per_cell = 0.0
-    
+
             for _ in range(100):
                 mid = (low + high) / 2
                 b_mid = erlangb(traffic=mid, channels=channels_per_cell)
@@ -309,16 +309,16 @@ def calculate():
                 if abs(high - low) < 1e-4:
                     break
             max_traffic_per_cell = low
-    
-    
+
+
             # Compute maximum users per cell 
             max_users_per_cell = max_traffic_per_cell / traffic_per_user if traffic_per_user > 0 else float('inf')
             #Compute maximum users per system
             max_system_users = max_users_per_cell * num_cells
-    
+
             # Compute current blocking probability
             blocking_prob = erlangb(traffic=traffic_per_cell, channels=channels_per_cell) if channels_per_cell > 0 else 1.0
-    
+
             results = {
                 "Hexagonal cell area (km²)": f"{cell_area:.2f}",
                 "Number of cells required": num_cells,
@@ -332,11 +332,11 @@ def calculate():
                 "Maximum users per cell": f"{max_users_per_cell:.2f}",
                 "Maximum users in system": f"{max_system_users:.2f}"
             }
-    
+
             prompt = f"""
     You are a built-in AI assistant in a cellular network design web platform. 
     The backend has used user-provided inputs to calculate several planning metrics.
-    
+
     Calculated outputs:
     - Hexagonal cell area: {cell_area:.2f} km²
     - Required number of cells: {num_cells}
@@ -349,7 +349,7 @@ def calculate():
     - Maximum users per cell: {max_users_per_cell:.2f}
     - Maximum users system-wide: {max_system_users:.2f}
     - Computed blocking probability: {blocking_prob:.4f}
-    
+
     Key user inputs:
     - Total coverage area: {total_area} km²
     - Cell radius: {cell_radius} km
@@ -359,16 +359,16 @@ def calculate():
     - Number of users: {num_users}
     - Average traffic per user: {traffic_per_user} Erlangs
     - Blocking probability target: {blocking_target}
-    
+
     Now, explain:
     - What each result means in the context of cellular system planning
     - Why it's important (e.g., ensuring service quality, managing interference)
     - How user inputs affect these outputs
-    
+
     Use simple terms, real-world analogies (e.g., “like traffic lanes on a highway”), and ensure clarity for students and junior engineers.
     """
-    
-    
+
+
         else:
             return jsonify({"error": "Unknown scenario"}), 400
 
