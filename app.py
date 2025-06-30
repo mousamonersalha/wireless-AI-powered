@@ -388,12 +388,12 @@ def calculate():
 
     ai_responses = {}
     with ThreadPoolExecutor() as executor:
-        # Submit all API calls
+        
         future_openrouter = executor.submit(call_openrouter, prompt)
         future_deepseek = executor.submit(call_deepseek, prompt)
         future_gemini = executor.submit(call_gemini, prompt)
         
-        # Get results
+        
         ai_responses = {
             "DeepSeek V3": future_deepseek.result(),
             "Gemini 2.5-flash": future_gemini.result(),
